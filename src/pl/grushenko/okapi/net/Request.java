@@ -49,7 +49,6 @@ public class Request {
 		
 		connection.setRequestMethod("GET"); 
 		connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded"); 
-		connection.setRequestProperty("charset", "utf-8");
 		
 		InputStream is;
 		if(connection.getResponseCode()== 200)
@@ -65,6 +64,10 @@ public class Request {
 			sb.append(line);
 		
 		System.out.println(sb.toString());
+		
+		if(connection.getResponseCode() == 200)
+			return URLParams.parseParamsString(sb.toString());
+		
 		
 		return null;
 	}	

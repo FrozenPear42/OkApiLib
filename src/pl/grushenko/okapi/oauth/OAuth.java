@@ -29,27 +29,28 @@ public class OAuth {
 	public OAuthToken requestToken() throws Exception {
 		URLParams requestParams;
 		requestParams = new URLParams();
+		
 		requestParams.appendParam("oauth_consumer_key", this.consumerKey);
 		requestParams.appendParam("oauth_signature_method", "HMAC-SHA1");
 		requestParams.appendParam("oauth_timestamp", String.valueOf((new Date().getTime()/1000)));
 		requestParams.appendParam("oauth_nonce", String.valueOf(rand.nextInt()));
 		requestParams.appendParam("oauth_version", "1.0");
 		requestParams.appendParam("oauth_callback", "oob");
-	
+
+		
 		String signingBase;
 		signingBase = "GET&" + URLEncoder.encode(this.host + "/services/oauth/request_token", "utf-8") + "&"
 				+ URLEncoder.encode(requestParams.getParamString(), "utf-8");
 
-		String signature = signSHA1(URLEncoder.encode(consumerSecret, "utf-8") + "&" + URLEncoder.encode(consumerKey, "utf-8"), signingBase);
+		String signature = signSHA1(URLEncoder.encode(consumerSecret, "utf-8") + "&" , signingBase);
 		
 		requestParams.appendParam("oauth_signature", URLEncoder.encode(signature, "utf-8"));
 		
 		System.out.println(signingBase);
 	
-		Request.getRequest(this.host + "/services/oauth/request_token", requestParams);
-		
-		
-		return new OAuthToken(null, null);
+		URLParams res = Request.getRequest(this.host + "/services/oauth/request_token", requestParams);
+	
+		return new OAuthToken(res.getParam("oauth_token"), res.getParam("oauth_token_secret"));
 	}
 
 	public OAuthToken authorizeToken(OAuthToken unauthorizedToken) throws IOException, AuthorizationException {
@@ -61,6 +62,8 @@ public class OAuth {
 
 		return new OAuthToken(null, null);
 	}
+
+	
 
 	private String signSHA1(String key, String text) throws Exception {
 		SecretKeySpec signingKey = new SecretKeySpec(key.getBytes(), "HmacSHA1");
