@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.ParseException;
 
 public class Request {
 	@Deprecated
@@ -62,14 +63,21 @@ public class Request {
 		String line;
 		while((line = reader.readLine()) != null)
 			sb.append(line);
-		
-		System.out.println(sb.toString());
-		
+
 		if(connection.getResponseCode() == 200)
-			return URLParams.parseParamsString(sb.toString());
+		{
+			URLParams res = new URLParams();
+			try {	
+				res = URLParams.parseParamsString(sb.toString());
+			} catch (ParseException e){
+				System.out.println(sb.toString());
+			}
 		
 		
-		return null;
+		return res;
+		}else{
+			throw new Exception();
+		}
 	}	
 	
 	

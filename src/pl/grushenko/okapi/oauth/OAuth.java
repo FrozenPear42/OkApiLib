@@ -1,13 +1,9 @@
 package pl.grushenko.okapi.oauth;
 
-import java.io.IOException;
-import java.net.URLEncoder;
+import java.awt.Desktop;
+import java.net.URL;
 import java.util.Date;
 import java.util.Random;
-
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import javax.xml.bind.DatatypeConverter;
 
 import pl.grushenko.okapi.net.Request;
 import pl.grushenko.okapi.net.URLParams;
@@ -27,50 +23,45 @@ public class OAuth {
 	}
 
 	public OAuthToken requestToken() throws Exception {
-		URLParams requestParams;
-		requestParams = new URLParams();
-		
+		URLParams requestParams = new URLParams();
 		requestParams.appendParam("oauth_consumer_key", this.consumerKey);
 		requestParams.appendParam("oauth_signature_method", "HMAC-SHA1");
 		requestParams.appendParam("oauth_timestamp", String.valueOf((new Date().getTime()/1000)));
 		requestParams.appendParam("oauth_nonce", String.valueOf(rand.nextInt()));
 		requestParams.appendParam("oauth_version", "1.0");
 		requestParams.appendParam("oauth_callback", "oob");
-
 		
-		String signingBase;
-		signingBase = "GET&" + URLEncoder.encode(this.host + "/services/oauth/request_token", "utf-8") + "&"
-				+ URLEncoder.encode(requestParams.getParamString(), "utf-8");
-
-		String signature = signSHA1(URLEncoder.encode(consumerSecret, "utf-8") + "&" , signingBase);
+		requestParams = OAuthUtils.signRequest(this.host + "/services/oauth/request_token", requestParams, new OAuthToken(consumerKey, consumerSecret));
 		
-		requestParams.appendParam("oauth_signature", URLEncoder.encode(signature, "utf-8"));
-		
-		System.out.println(signingBase);
-	
 		URLParams res = Request.getRequest(this.host + "/services/oauth/request_token", requestParams);
-	
 		return new OAuthToken(res.getParam("oauth_token"), res.getParam("oauth_token_secret"));
 	}
 
-	public OAuthToken authorizeToken(OAuthToken unauthorizedToken) throws IOException, AuthorizationException {
+	public String authorizeToken(OAuthToken unauthorizedToken) throws Exception, AuthorizationException {
 
-		return new OAuthToken(null, null);
+		URLParams requestParams = new URLParams();
+		requestParams.appendParam("interactivity", "minimal");
+		requestParams.appendParam("oauth_token", unauthorizedToken.getKey());
+		Desktop.getDesktop().browse(new URL(this.host + "/services/oauth/authorize?" + requestParams.getParamString()).toURI());
+		
+		return null;
 	}
 
-	public OAuthToken getAccessToken(OAuthToken authorizedToken) throws IOException {
-
-		return new OAuthToken(null, null);
+	public OAuthToken getAccessToken(OAuthToken authorizedToken, String PIN) throws Exception {
+		URLParams requestParams = new URLParams();
+		requestParams.appendParam("oauth_consumer_key", this.consumerKey);
+		requestParams.appendParam("oauth_signature_method", "HMAC-SHA1");
+		requestParams.appendParam("oauth_timestamp", String.valueOf((new Date().getTime()/1000)));
+		requestParams.appendParam("oauth_nonce", String.valueOf(rand.nextInt()));
+		requestParams.appendParam("oauth_version", "1.0");
+		requestParams.appendParam("oauth_verifier", PIN);
+		requestParams.appendParam("oauth_token", authorizedToken.getKey());
+		requestParams = OAuthUtils.signRequest(this.host + "/services/oauth/access_token", requestParams, new OAuthToken(consumerKey, consumerSecret), authorizedToken);
+		
+		URLParams res = Request.getRequest(this.host + "/services/oauth/access_token", requestParams);
+		
+		return new OAuthToken(res.getParam("oauth_token"), res.getParam("oauth_token_secret"));
 	}
 
-	
-
-	private String signSHA1(String key, String text) throws Exception {
-		SecretKeySpec signingKey = new SecretKeySpec(key.getBytes(), "HmacSHA1");
-		Mac mac = Mac.getInstance("HmacSHA1");
-		mac.init(signingKey);
-		byte[] raw = mac.doFinal(text.getBytes());
-		return DatatypeConverter.printBase64Binary(raw);
-	}
 	
 }
