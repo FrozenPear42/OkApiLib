@@ -33,7 +33,7 @@ public class OAuth {
 		
 		requestParams = OAuthUtils.signRequest(this.host + "/services/oauth/request_token", requestParams, new OAuthToken(consumerKey, consumerSecret));
 		
-		URLParams res = Request.getRequest(this.host + "/services/oauth/request_token", requestParams);
+		URLParams res = URLParams.parseParamsString(Request.getRequest(this.host + "/services/oauth/request_token", requestParams));
 		return new OAuthToken(res.getParam("oauth_token"), res.getParam("oauth_token_secret"));
 	}
 
@@ -49,19 +49,25 @@ public class OAuth {
 
 	public OAuthToken getAccessToken(OAuthToken authorizedToken, String PIN) throws Exception {
 		URLParams requestParams = new URLParams();
+		requestParams.appendParam("oauth_verifier", PIN);
+		
+		URLParams res = URLParams.parseParamsString(authorizedGetRequest(this.host + "/services/oauth/access_token", requestParams, authorizedToken));
+		
+		return new OAuthToken(res.getParam("oauth_token"), res.getParam("oauth_token_secret"));
+	}
+
+	public String authorizedGetRequest(String url, URLParams requestParams, OAuthToken accessToken) throws Exception {
 		requestParams.appendParam("oauth_consumer_key", this.consumerKey);
 		requestParams.appendParam("oauth_signature_method", "HMAC-SHA1");
 		requestParams.appendParam("oauth_timestamp", String.valueOf((new Date().getTime()/1000)));
 		requestParams.appendParam("oauth_nonce", String.valueOf(rand.nextInt()));
 		requestParams.appendParam("oauth_version", "1.0");
-		requestParams.appendParam("oauth_verifier", PIN);
-		requestParams.appendParam("oauth_token", authorizedToken.getKey());
-		requestParams = OAuthUtils.signRequest(this.host + "/services/oauth/access_token", requestParams, new OAuthToken(consumerKey, consumerSecret), authorizedToken);
+		requestParams.appendParam("oauth_token", accessToken.getKey());
 		
-		URLParams res = Request.getRequest(this.host + "/services/oauth/access_token", requestParams);
+		requestParams = OAuthUtils.signRequest(url, requestParams, new OAuthToken(consumerKey, consumerSecret), accessToken);
+		return Request.getRequest(url, requestParams);
 		
-		return new OAuthToken(res.getParam("oauth_token"), res.getParam("oauth_token_secret"));
 	}
-
+	
 	
 }
