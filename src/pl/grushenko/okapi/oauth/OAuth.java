@@ -1,7 +1,6 @@
 package pl.grushenko.okapi.oauth;
 
 import java.io.IOException;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Date;
 import java.util.Random;
@@ -32,20 +31,22 @@ public class OAuth {
 		requestParams = new URLParams();
 		requestParams.appendParam("oauth_consumer_key", this.consumerKey);
 		requestParams.appendParam("oauth_signature_method", "HMAC-SHA1");
-		requestParams.appendParam("oauth_timestamp", String.valueOf((new Date().getTime()/1000000)));
+		requestParams.appendParam("oauth_timestamp", String.valueOf((new Date().getTime()/1000)));
 		requestParams.appendParam("oauth_nonce", String.valueOf(rand.nextInt()));
 		requestParams.appendParam("oauth_version", "1.0");
 		requestParams.appendParam("oauth_callback", "oob");
 	
 		String signingBase;
-		signingBase = "POST&" + URLEncoder.encode(this.host, "utf-8") + "&"
+		signingBase = "GET&" + URLEncoder.encode(this.host + "/services/oauth/request_token", "utf-8") + "&"
 				+ URLEncoder.encode(requestParams.getParamString(), "utf-8");
 
-		String signature = signSHA1(consumerKey + "&" + consumerSecret, signingBase);
+		String signature = signSHA1(URLEncoder.encode(consumerSecret, "utf-8") + "&" + URLEncoder.encode(consumerKey, "utf-8"), signingBase);
 		
-		requestParams.appendParam("oauth_signature", signature);
+		requestParams.appendParam("oauth_signature", URLEncoder.encode(signature, "utf-8"));
 		
-		Request.postRequest(new URL(this.host + "/services/oauth/request_token"), requestParams);
+		System.out.println(signingBase);
+	
+		Request.getRequest(this.host + "/services/oauth/request_token", requestParams);
 		
 		
 		return new OAuthToken(null, null);

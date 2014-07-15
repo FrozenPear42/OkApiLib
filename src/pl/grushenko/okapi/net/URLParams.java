@@ -23,7 +23,6 @@ public class URLParams {
 	
 	public String getParamString(){
 		StringBuilder sb = new StringBuilder();
-		//sb.append('?');
 		
 		Iterator<Entry<String,String>> it = params.entrySet().iterator();
 		while(it.hasNext())
