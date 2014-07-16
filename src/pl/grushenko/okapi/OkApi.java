@@ -1,15 +1,17 @@
 package pl.grushenko.okapi;
 
-import java.awt.Desktop;
+import java.util.Date;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import pl.grushenko.okapi.cache.Geocache;
+import pl.grushenko.okapi.cache.Log.LogType;
 import pl.grushenko.okapi.cache.User;
 import pl.grushenko.okapi.net.URLParams;
 import pl.grushenko.okapi.oauth.OAuth;
 import pl.grushenko.okapi.oauth.OAuthToken;
+import pl.grushenko.okapi.util.ISO8601DateParser;
 
 public class OkApi {
 
@@ -57,15 +59,47 @@ public class OkApi {
 		
 	}
 	
+
+	public void submitLog(String cacheCode, LogType type, String comment, Date date, int rating, boolean recomend, String password, boolean needsMaintenance) throws Exception {
+		URLParams requestParams = new URLParams();
+		requestParams.appendParam("cache_code", cacheCode);
+		requestParams.appendParam("logtype", type.getData());
+		requestParams.appendParam("comment", comment);
+		requestParams.appendParam("when", ISO8601DateParser.toString(date));
+		if(password != null)
+			requestParams.appendParam("password", password);
+		if(rating != -1)
+			requestParams.appendParam("rating", String.valueOf(rating));
+		
+		requestParams.appendParam("needs_maintenance", String.valueOf(needsMaintenance));
+		requestParams.appendParam("recommend", String.valueOf(recomend));
+		
+		
+		String res = auth.authorizedGetRequest(host + "/services/logs/submit", requestParams, accessToken);
+		JSONParser parser = new JSONParser();
+		JSONObject obj = (JSONObject)parser.parse(res);
+		if(!(Boolean)obj.get("success"))
+			throw new Exception((String)obj.get("message"));
+		
+	}
+	
+	public void submitLog(String cacheCode, LogType type, String comment, Date date, int rating) throws Exception {
+		submitLog(cacheCode, type, comment, date, rating, false, null, false);
+	}
+	
+	public void submitLog(String cacheCode, LogType type, String comment, Date date) throws Exception {
+		submitLog(cacheCode, type, comment, date, -1, false, null, false);
+	}	
+	
 	
 	
 	public static void main(String[] args) {
 		try {
 
 			OkApi api = new OkApi(SensitiveData.consumer, SensitiveData.access, "pl");
-			api.getCache("OP0001");
-			//Desktop.getDesktop().browse(api.getUser("Grushenko").getProfileURL().toURI());
 			
+			//Desktop.getDesktop().browse(api.getCache("OP0001").getOwner().getProfileURL().toURI());
+			api.submitLog("OP3329", LogType.COMMENT, "test", new Date());
 			
 			
 		} catch (Exception e) {

@@ -3,12 +3,12 @@ package pl.grushenko.okapi.cache;
 import java.awt.Image;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 
-import javax.print.attribute.standard.MediaSize.ISO;
+import javax.imageio.ImageIO;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -83,7 +83,20 @@ public class Geocache {
 		this.images = new ArrayList<Image>();
 		
 		JSONArray imgs = (JSONArray) obj.get("images");
-		//imgs
+		
+		@SuppressWarnings("unchecked")
+		Iterator<JSONObject> it = imgs.iterator();
+		
+		while(it.hasNext()) {
+			JSONObject img = it.next();
+			try {
+				this.images.add(ImageIO.read(new URL((String)img.get("url"))));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	
+		
 		//logs
 		//alt_wpts
 		//trackables

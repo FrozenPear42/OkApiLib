@@ -84,7 +84,7 @@ public class ISO8601DateParser {
         
         //this is zero time so we need to add that TZ indicator for 
         if ( input.endsWith( "Z" ) ) {
-            input = input.substring( 0, input.length() - 1) + "GMT-00:00";
+            input = input.substring( 0, input.length() - 1) + "GMT+02:00";
         } else {
             int inset = 6;
         
@@ -101,8 +101,8 @@ public class ISO8601DateParser {
     public static String toString( Date date ) {
         
         SimpleDateFormat df = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ssz" );
-        
-        TimeZone tz = TimeZone.getTimeZone( "UTC" );
+       
+        TimeZone tz = TimeZone.getTimeZone( "GMT+02:00" );
         
         df.setTimeZone( tz );
 
