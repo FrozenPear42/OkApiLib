@@ -36,14 +36,17 @@ public class OkApi {
 	public User getUser(String username) throws NoSuchUserException {
 		URLParams requestParams = new URLParams();
 		requestParams.appendParam("username", username);
-		requestParams.appendParam("fields", "uuid|profile_url|caches_found|caches_notfound|caches|hidden|rcdms_given");
+		requestParams.appendParam("fields", "uuid%7Cprofile_url%7Ccaches_found%7Ccaches_notfound%7Ccaches_hidden%7Crcmds_given");
+		
 		try {
-			String res = auth.authorizedGetRequest(host + "/services/users/by_name", requestParams, accessToken);
+			String res = auth.authorizedGetRequest(host + "/services/users/by_username", requestParams, accessToken);
 			JSONParser parser = new JSONParser();
 			JSONObject obj = (JSONObject)parser.parse(res);
 			
 			return new User(obj);
 		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
 			throw new NoSuchUserException();
 		}
 	}
@@ -55,8 +58,7 @@ public class OkApi {
 	public static void main(String[] args) {
 		try {
 
-			OkApi api = new OkApi(new OAuthToken("H2XVcvwueYwEKtwEwB6E",
-					"s8a9nuWRJrThhG4k3qD8eZCQhYkErg9GfaGuuua4"), new OAuthToken("vmEJ6BHtdQw72qX7gsHC", "TT52PJRVw4tQeWqbqXuuEPrw4etbxZDfJz7q8Pau"), "pl");
+			OkApi api = new OkApi(SensitiveData.consumer, SensitiveData.access, "pl");
 			Desktop.getDesktop().browse(api.getUser("Grushenko").getProfileURL().toURI());
 			
 			

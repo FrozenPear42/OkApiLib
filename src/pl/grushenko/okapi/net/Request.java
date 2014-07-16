@@ -26,7 +26,7 @@ public class Request {
 			while((line = reader.readLine()) != null)
 				sb.append(line);
 			
-			throw new ConnectException(String.valueOf(connection.getResponseCode()) + sb.toString());
+			throw new ConnectException(String.valueOf(connection.getResponseCode()) + ": "+ sb.toString());
 		
 		}
 			
@@ -57,7 +57,7 @@ public class Request {
 			while((line = reader.readLine()) != null)
 				sb.append(line);
 			
-			throw new ConnectException(String.valueOf(connection.getResponseCode()) + sb.toString());} 
+			throw new ConnectException(String.valueOf(connection.getResponseCode()) + ": " + sb.toString());} 
 		return connection.getInputStream();		
 	}	
 	

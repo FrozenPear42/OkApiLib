@@ -16,7 +16,7 @@ public class OAuthUtils {
 		signingBase = "GET&" + URLEncoder.encode(url, "utf-8") + "&"
 				+ URLEncoder.encode(requestParams.getParamString(), "utf-8");
 
-		String signature = signSHA1(URLEncoder.encode(consumerToken.getSecret(), "utf-8") + "&" + token.getSecret(), signingBase);
+		String signature = signSHA1(URLEncoder.encode(consumerToken.getSecret(), "utf-8") + "&" + URLEncoder.encode(token.getSecret(), "utf-8"), signingBase);
 		
 		requestParams.appendParam("oauth_signature", URLEncoder.encode(signature, "utf-8"));
 		} catch (Exception e) {
@@ -47,11 +47,17 @@ public class OAuthUtils {
 
 	
 	
-	private static String signSHA1(String key, String text) throws Exception {
+	private static String signSHA1(String key, String text) {
 		SecretKeySpec signingKey = new SecretKeySpec(key.getBytes(), "HmacSHA1");
-		Mac mac = Mac.getInstance("HmacSHA1");
-		mac.init(signingKey);
-		byte[] raw = mac.doFinal(text.getBytes());
-		return DatatypeConverter.printBase64Binary(raw);
+		try{
+			Mac mac = Mac.getInstance("HmacSHA1");
+			mac.init(signingKey);
+			byte[] raw = mac.doFinal(text.getBytes());
+			return DatatypeConverter.printBase64Binary(raw);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
+
 }

@@ -6,30 +6,30 @@ import java.net.URL;
 import org.json.simple.JSONObject;
 
 public class User {
-	private int uuid;
+	private String uuid;
 	private String username;
 	private URL profileURL;
-	private int cachesFound;
-	private int cachesNotFound;
-	private int cachesHidden;
-	private int recomendationsGiven;
+	private long cachesFound;
+	private long cachesNotFound;
+	private long cachesHidden;
+	private long recomendationsGiven;
 	
 	public User(JSONObject obj){
-		uuid = (Integer) obj.get("uuid");
+		uuid = (String) obj.get("uuid");
 		username = (String) obj.get("username");
 		try {
 			profileURL = new URL((String) obj.get("profile_url"));
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
-		cachesFound = (Integer) obj.get("caches_found");
-		cachesNotFound = (Integer) obj.get("caches_notfound");
-		cachesHidden = (Integer) obj.get("caches_hidden");
-		recomendationsGiven = (Integer) obj.get("rcmds_given");
+		cachesFound = (Long) obj.get("caches_found");
+		cachesNotFound = (Long) obj.get("caches_notfound");
+		cachesHidden = (Long) obj.get("caches_hidden");
+		recomendationsGiven = (Long) obj.get("rcmds_given");
 		
 	}
 
-	public int getUuid() {
+	public String getUuid() {
 		return uuid;
 	}
 
@@ -41,19 +41,19 @@ public class User {
 		return profileURL;
 	}
 
-	public int getCachesFound() {
+	public long getCachesFound() {
 		return cachesFound;
 	}
 
-	public int getCachesNotFound() {
+	public long getCachesNotFound() {
 		return cachesNotFound;
 	}
 
-	public int getCachesHidden() {
+	public long getCachesHidden() {
 		return cachesHidden;
 	}
 
-	public int getRecomendationsGiven() {
+	public long getRecomendationsGiven() {
 		return recomendationsGiven;
 	}
 	
