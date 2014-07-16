@@ -17,7 +17,7 @@ public class URLParams {
 	
 	public void appendParam(String key, String value) {
 		try {
-			this.params.put(URLEncoder.encode(key, "utf-8"), value);
+			this.params.put(URLEncoder.encode(key, "utf-8"), URLEncoder.encode(value, "utf-8"));
 		} catch (UnsupportedEncodingException e) {
 			//SHOULD NEVER HAPPEN
 			e.printStackTrace();

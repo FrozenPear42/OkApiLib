@@ -36,7 +36,7 @@ public class OkApi {
 	public User getUser(String username) throws NoSuchUserException {
 		URLParams requestParams = new URLParams();
 		requestParams.appendParam("username", username);
-		requestParams.appendParam("fields", "uuid%7Cprofile_url%7Ccaches_found%7Ccaches_notfound%7Ccaches_hidden%7Crcmds_given");
+		requestParams.appendParam("fields", "uuid|profile_url|caches_found|caches_notfound|caches_hidden|rcmds_given");
 		
 		try {
 			String res = auth.authorizedGetRequest(host + "/services/users/by_username", requestParams, accessToken);

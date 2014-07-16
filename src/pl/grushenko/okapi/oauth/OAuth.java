@@ -1,6 +1,7 @@
 package pl.grushenko.okapi.oauth;
 
 import java.awt.Desktop;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Date;
 import java.util.Random;
@@ -66,6 +67,19 @@ public class OAuth {
 		
 		requestParams = OAuthUtils.signRequest(url, requestParams, new OAuthToken(consumerKey, consumerSecret), accessToken);
 		return Request.getRequest(url, requestParams);
+		
+	}
+	
+	public InputStream authorizedRawGetRequest(String url, URLParams requestParams, OAuthToken accessToken) throws Exception {
+		requestParams.appendParam("oauth_consumer_key", this.consumerKey);
+		requestParams.appendParam("oauth_signature_method", "HMAC-SHA1");
+		requestParams.appendParam("oauth_timestamp", String.valueOf((new Date().getTime()/1000)));
+		requestParams.appendParam("oauth_nonce", String.valueOf(rand.nextInt()));
+		requestParams.appendParam("oauth_version", "1.0");
+		requestParams.appendParam("oauth_token", accessToken.getKey());
+		
+		requestParams = OAuthUtils.signRequest(url, requestParams, new OAuthToken(consumerKey, consumerSecret), accessToken);
+		return Request.getRequestRaw(url, requestParams);
 		
 	}
 	

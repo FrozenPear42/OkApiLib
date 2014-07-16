@@ -18,7 +18,7 @@ public class OAuthUtils {
 
 		String signature = signSHA1(URLEncoder.encode(consumerToken.getSecret(), "utf-8") + "&" + URLEncoder.encode(token.getSecret(), "utf-8"), signingBase);
 		
-		requestParams.appendParam("oauth_signature", URLEncoder.encode(signature, "utf-8"));
+		requestParams.appendParam("oauth_signature", signature);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -36,7 +36,7 @@ public class OAuthUtils {
 
 		String signature = signSHA1(URLEncoder.encode(consumerToken.getSecret(), "utf-8") + "&", signingBase);
 		
-		requestParams.appendParam("oauth_signature", URLEncoder.encode(signature, "utf-8"));
+		requestParams.appendParam("oauth_signature", signature);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

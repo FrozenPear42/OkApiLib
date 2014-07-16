@@ -13,12 +13,12 @@ public class Request {
 		
 		URL obj = new URL(url + "?" + params.getParamString());
 		
-		
 		HttpURLConnection connection = (HttpURLConnection) obj.openConnection();           
-		
 		connection.setRequestMethod("GET"); 
 		connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded"); 
 		
+		
+		//Error buffer
 		if(connection.getResponseCode() != 200) {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
 			StringBuilder sb = new StringBuilder();
@@ -46,7 +46,6 @@ public class Request {
 		
 		
 		HttpURLConnection connection = (HttpURLConnection) obj.openConnection();           
-		
 		connection.setRequestMethod("GET"); 
 		connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded"); 
 
@@ -57,8 +56,13 @@ public class Request {
 			while((line = reader.readLine()) != null)
 				sb.append(line);
 			
-			throw new ConnectException(String.valueOf(connection.getResponseCode()) + ": " + sb.toString());} 
+			throw new ConnectException(String.valueOf(connection.getResponseCode()) + ": " + sb.toString());
+		}
+		
 		return connection.getInputStream();		
-	}	
+	}
+	
+	
+	
 	
 }
