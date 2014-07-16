@@ -5,14 +5,9 @@ import java.util.Date;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-
-
-
 import pl.grushenko.okapi.cache.Geocache;
 import pl.grushenko.okapi.cache.Log.LogType;
 import pl.grushenko.okapi.cache.User;
-import pl.grushenko.okapi.geokrety.GeokretyApi;
-import pl.grushenko.okapi.net.Request;
 import pl.grushenko.okapi.net.URLParams;
 import pl.grushenko.okapi.oauth.OAuth;
 import pl.grushenko.okapi.oauth.OAuthToken;
@@ -95,22 +90,6 @@ public class OkApi {
 	public void submitLog(String cacheCode, LogType type, String comment, Date date) throws Exception {
 		submitLog(cacheCode, type, comment, date, -1, false, null, false);
 	}	
-	
-	
-	
-	public static void main(String[] args) {
-		try {
-
-			OkApi api = new OkApi(SensitiveData.consumer, SensitiveData.access, "pl");
-			System.out.println(GeokretyApi.idToReferenceNumber(16233));
-			System.out.println(GeokretyApi.referenceNumberToId("GK3F69"));
-			GeokretyApi.getGeokretById("GK3F69");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	
-	
+		
 	
 }

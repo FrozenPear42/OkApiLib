@@ -4,8 +4,7 @@ public class Location {
 
 	private float lat;
 	private float lon;
-	
-	
+
 	public Location(String string) {
 		String[] res = string.split("|");
 		lat = Float.parseFloat(res[0]);
@@ -17,5 +16,15 @@ public class Location {
 		this.lon = lon;
 		
 	}
+	
+	public float getLat() {
+		return lat;
+	}
+
+	public float getLon() {
+		return lon;
+	}
+	
+
 
 }

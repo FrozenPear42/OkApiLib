@@ -9,6 +9,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import pl.grushenko.okapi.geokrety.Geokret.GeokretState;
+import pl.grushenko.okapi.geokrety.Geokret.GeokretType;
 import pl.grushenko.okapi.util.Location;
 
 public class GeokretyParser {
@@ -21,6 +23,6 @@ public class GeokretyParser {
 		NodeList nList = doc.getElementsByTagName("geokrety");
 		Element kret = (Element)  nList.item(0).getFirstChild();
 		
-		return new Geokret(Integer.parseInt(kret.getAttribute("id")), kret.getTextContent(), Integer.parseInt(kret.getAttribute("dist")), new Location(Float.parseFloat(kret.getAttribute("lat")), Float.parseFloat(kret.getAttribute("lon"))), kret.getAttribute("waypoint"),Integer.parseInt(kret.getAttribute("owner_id")), Integer.parseInt(kret.getAttribute("state")), Integer.parseInt(kret.getAttribute("type")), kret.getAttribute("image"));
+		return new Geokret(Integer.parseInt(kret.getAttribute("id")), kret.getTextContent(), Integer.parseInt(kret.getAttribute("dist")), new Location(Float.parseFloat(kret.getAttribute("lat")), Float.parseFloat(kret.getAttribute("lon"))), kret.getAttribute("waypoint"),Integer.parseInt(kret.getAttribute("owner_id")), GeokretState.values()[Integer.parseInt(kret.getAttribute("state"))], GeokretType.values()[Integer.parseInt(kret.getAttribute("type"))], kret.getAttribute("image"));
 	}
 }
