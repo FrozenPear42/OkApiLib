@@ -1,6 +1,7 @@
 package pl.grushenko.okapi.net;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.ConnectException;
@@ -39,6 +40,47 @@ public class Request {
 
 		return sb.toString();
 	}	
+	
+
+	public static String postRequest(String url, URLParams params) throws Exception {
+		
+		URL obj = new URL(url);
+		
+		HttpURLConnection connection = (HttpURLConnection) obj.openConnection();           
+		
+		connection.setDoOutput(true);
+		
+		connection.setRequestMethod("POST"); 
+		connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded"); 
+		
+		DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
+		wr.writeBytes(params.getParamString());
+		wr.flush();
+		wr.close();
+		
+		//Error buffer
+		if(connection.getResponseCode() != 200) {
+			BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
+			StringBuilder sb = new StringBuilder();
+			String line;
+			while((line = reader.readLine()) != null)
+				sb.append(line);
+			
+			throw new ConnectException(String.valueOf(connection.getResponseCode()) + ": "+ sb.toString());
+		
+		}
+			
+		BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+		StringBuilder sb = new StringBuilder();
+		
+		String line;
+		while((line = reader.readLine()) != null)
+			sb.append(line);
+
+		return sb.toString();
+	}	
+	
+	
 	
 	public static InputStream getRequestRaw(String url, URLParams params) throws Exception {
 		

@@ -14,6 +14,7 @@ import org.json.simple.JSONObject;
 
 import pl.grushenko.okapi.util.CaptionedImage;
 import pl.grushenko.okapi.util.ISO8601DateParser;
+import pl.grushenko.okapi.util.Location;
 
 public class Geocache {
 	private String code;
