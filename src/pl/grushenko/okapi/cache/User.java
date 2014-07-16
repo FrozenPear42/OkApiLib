@@ -22,10 +22,14 @@ public class User {
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
-		cachesFound = (Long) obj.get("caches_found");
-		cachesNotFound = (Long) obj.get("caches_notfound");
-		cachesHidden = (Long) obj.get("caches_hidden");
-		recomendationsGiven = (Long) obj.get("rcmds_given");
+		if(obj.containsKey("caches_found"))
+			cachesFound = (Long) obj.get("caches_found");
+		if(obj.containsKey("caches_notfound"))
+			cachesNotFound = (Long) obj.get("caches_notfound");
+		if(obj.containsKey("caches_hidden"))
+			cachesHidden = (Long) obj.get("caches_hidden");
+		if(obj.containsKey("rcmds_given"))
+			recomendationsGiven = (Long) obj.get("rcmds_given");
 		
 	}
 
