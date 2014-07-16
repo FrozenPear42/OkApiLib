@@ -98,10 +98,6 @@ public class OkApi {
 
 			OkApi api = new OkApi(SensitiveData.consumer, SensitiveData.access, "pl");
 			
-			//Desktop.getDesktop().browse(api.getCache("OP0001").getOwner().getProfileURL().toURI());
-			api.submitLog("OP3329", LogType.COMMENT, "test", new Date());
-			
-			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

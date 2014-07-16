@@ -1,6 +1,5 @@
 package pl.grushenko.okapi.cache;
 
-import java.awt.Image;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
@@ -13,6 +12,7 @@ import javax.imageio.ImageIO;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import pl.grushenko.okapi.util.CaptionedImage;
 import pl.grushenko.okapi.util.ISO8601DateParser;
 
 public class Geocache {
@@ -28,7 +28,7 @@ public class Geocache {
 	private long notfounds;
 	private String size;
 	private float difficulty;
-	private double terrain;
+	private float terrain;
 	private long rating;
 	private long recommendations;
 	private boolean reqPasswd;
@@ -41,7 +41,7 @@ public class Geocache {
 	private String shortDescription;
 	private String description;
 	private String myNotes;
-	private ArrayList<Image> images;
+	private ArrayList<CaptionedImage> images;
 	
 	public Geocache(String code, JSONObject obj)
 	{
@@ -58,8 +58,10 @@ public class Geocache {
 		this.founds = (Long) obj.get("founds");
 		this.notfounds = (Long) obj.get("notfounds");
 		this.size = (String) obj.get("size2");
-		this.difficulty = (Long) obj.get("difficulty");
-		this.terrain = (Double) obj.get("terrain");
+
+		this.difficulty = ((Number) obj.get("difficulty")).floatValue();
+		this.terrain = ((Number) obj.get("terrain")).floatValue();
+		
 		this.rating = (Long) obj.get("rating");
 		this.recommendations = (Long) obj.get("recommendations");
 		this.reqPasswd = (Boolean) obj.get("req_passwd");
@@ -80,7 +82,7 @@ public class Geocache {
 		
 		this.myNotes = (String) obj.get("my_notes");
 		
-		this.images = new ArrayList<Image>();
+		this.images = new ArrayList<CaptionedImage>();
 		
 		JSONArray imgs = (JSONArray) obj.get("images");
 		
@@ -90,7 +92,7 @@ public class Geocache {
 		while(it.hasNext()) {
 			JSONObject img = it.next();
 			try {
-				this.images.add(ImageIO.read(new URL((String)img.get("url"))));
+				this.images.add(new CaptionedImage(ImageIO.read(new URL((String)img.get("url"))), (String) img.get("caption"), (Boolean) img.get("is_spoiler")));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -152,7 +154,7 @@ public class Geocache {
 		return difficulty;
 	}
 
-	public double getTerrain() {
+	public float getTerrain() {
 		return terrain;
 	}
 
@@ -204,7 +206,7 @@ public class Geocache {
 		return myNotes;
 	}
 
-	public ArrayList<Image> getImages() {
+	public ArrayList<CaptionedImage> getImages() {
 		return images;
 	}
 }
