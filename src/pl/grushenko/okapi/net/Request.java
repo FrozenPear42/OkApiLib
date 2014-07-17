@@ -7,6 +7,10 @@ import java.io.InputStreamReader;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Date;
+
+import pl.grushenko.okapi.oauth.OAuthToken;
+import pl.grushenko.okapi.oauth.OAuthUtils;
 
 public class Request {
 
@@ -40,6 +44,32 @@ public class Request {
 
 		return sb.toString();
 	}	
+	
+	public static String authorizedGetRequest(String url, URLParams requestParams, OAuthToken consumerToken, OAuthToken accessToken ) throws Exception {
+		requestParams.appendParam("oauth_consumer_key", consumerToken.getKey());
+		requestParams.appendParam("oauth_signature_method", "HMAC-SHA1");
+		requestParams.appendParam("oauth_timestamp", String.valueOf((new Date().getTime()/1000)));
+		requestParams.appendParam("oauth_nonce", Integer.toHexString((int) new Date().getTime()));
+		requestParams.appendParam("oauth_version", "1.0");
+		requestParams.appendParam("oauth_token", accessToken.getKey());
+		
+		requestParams = OAuthUtils.signRequest(url, requestParams, consumerToken, accessToken);
+		return Request.getRequest(url, requestParams);
+		
+	}
+	
+	public static InputStream authorizedRawGetRequest(String url, URLParams requestParams, OAuthToken consumerToken, OAuthToken accessToken) throws Exception {
+		requestParams.appendParam("oauth_consumer_key", consumerToken.getKey());
+		requestParams.appendParam("oauth_signature_method", "HMAC-SHA1");
+		requestParams.appendParam("oauth_timestamp", String.valueOf((new Date().getTime()/1000)));
+		requestParams.appendParam("oauth_nonce", Integer.toHexString((int) new Date().getTime()));
+		requestParams.appendParam("oauth_version", "1.0");
+		requestParams.appendParam("oauth_token", accessToken.getKey());
+		
+		requestParams = OAuthUtils.signRequest(url, requestParams, consumerToken, accessToken);
+		return Request.getRequestRaw(url, requestParams);
+		
+	}
 	
 
 	public static String postRequest(String url, URLParams params) throws Exception {
