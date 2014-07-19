@@ -7,10 +7,10 @@ import pl.grushenko.okapi.net.Request;
 import pl.grushenko.okapi.net.URLParams;
 
 public class OAuth {
-
-	public static OAuthToken requestToken(OAuthToken consumerToken, String lang) throws Exception {
+	
+	public static OAuthToken requestToken(OAuthToken consumerToken, String lang, String callback) throws Exception {
 		
-		String func = "http://geocaching." + lang + "/services/oauth/request_token";
+		String func = "http://opencaching." + lang + "/okapi/services/oauth/request_token";
 		
 		URLParams requestParams = new URLParams();
 		requestParams.appendParam("oauth_consumer_key", consumerToken.getKey());
@@ -18,7 +18,11 @@ public class OAuth {
 		requestParams.appendParam("oauth_timestamp", String.valueOf((new Date().getTime()/1000)));
 		requestParams.appendParam("oauth_nonce", Integer.toHexString((int) new Date().getTime()));
 		requestParams.appendParam("oauth_version", "1.0");
-		requestParams.appendParam("oauth_callback", "oob");
+		if(callback != null)
+			requestParams.appendParam("oauth_callback", callback);
+		else
+			requestParams.appendParam("oauth_callback", "oob");
+		
 		
 		requestParams = OAuthUtils.signRequest(func, requestParams, consumerToken);
 		
@@ -26,19 +30,19 @@ public class OAuth {
 		return new OAuthToken(res.getParam("oauth_token"), res.getParam("oauth_token_secret"));
 	}
 
-	public static URL authorize(OAuthToken unauthorizedToken, String lang) throws Exception, AuthorizationException {
-		String func = "http://geocaching." + lang + "/services/oauth/authorize";
+	public static String authorize(OAuthToken unauthorizedToken, String lang) throws Exception, AuthorizationException {
+		String func = "http://opencaching." + lang + "/okapi/services/oauth/authorize";
 		
 		URLParams requestParams = new URLParams();
 		requestParams.appendParam("interactivity", "minimal");
 		requestParams.appendParam("oauth_token", unauthorizedToken.getKey());
-		return new URL(func + "?" + requestParams.getParamString());
+		return func + "?" + requestParams.getParamString();
 		
 	}
 
 	public static OAuthToken getAccessToken(OAuthToken authorizedToken, OAuthToken consumerToken, String lang, String PIN) throws Exception {
 		
-		String func = "http://geocaching." + lang + "/services/oauth/access_token";
+		String func = "http://opencaching." + lang + "/okapi/services/oauth/access_token";
 		
 		URLParams requestParams = new URLParams();
 		requestParams.appendParam("oauth_verifier", PIN);

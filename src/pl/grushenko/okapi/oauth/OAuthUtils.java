@@ -4,9 +4,9 @@ import java.net.URLEncoder;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import javax.xml.bind.DatatypeConverter;
 
 import pl.grushenko.okapi.net.URLParams;
+import pl.grushenko.okapi.util.Base64;
 
 public class OAuthUtils {
 	public static URLParams signRequest(String url, URLParams requestParams,OAuthToken consumerToken, OAuthToken token){
@@ -53,7 +53,8 @@ public class OAuthUtils {
 			Mac mac = Mac.getInstance("HmacSHA1");
 			mac.init(signingKey);
 			byte[] raw = mac.doFinal(text.getBytes());
-			return DatatypeConverter.printBase64Binary(raw);
+			
+			return Base64.encode(raw);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

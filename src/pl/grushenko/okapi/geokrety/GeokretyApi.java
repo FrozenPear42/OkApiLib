@@ -3,7 +3,6 @@ package pl.grushenko.okapi.geokrety;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import pl.grushenko.okapi.SensitiveData;
 import pl.grushenko.okapi.geokrety.Geokret.GeokretState;
 import pl.grushenko.okapi.net.Request;
 import pl.grushenko.okapi.net.URLParams;
@@ -42,8 +41,8 @@ public class GeokretyApi {
 		params.appendParam("godzina", data[1]);
 		params.appendParam("minuta", data[2]);
 		params.appendParam("comment", comment);
-		params.appendParam("app", SensitiveData.appName);
-		params.appendParam("app_ver", SensitiveData.appVersion);
+		params.appendParam("app", "app");
+		params.appendParam("app_ver", "version");
 		
 		params.appendParam("latlon", String.valueOf(loc.getLat()) + " " + String.valueOf(loc.getLon()));
 		params.appendParam("waypoint", waypoint);

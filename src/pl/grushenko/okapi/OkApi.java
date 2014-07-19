@@ -20,14 +20,11 @@ public class OkApi {
 	private OAuthToken accessToken;
 	private String host;
 	
-	public OkApi(OAuthToken consumerToken, String lang) {
-		this.consumerToken = consumerToken;
-		this.host = "http://opencaching." + lang + "/okapi";
-		//getAuthToken
-	}
+
 	
 	public OkApi(OAuthToken consumerToken, OAuthToken accessToken, String lang) {
-		this(consumerToken, lang);
+		this.consumerToken = consumerToken;
+		this.host = "http://opencaching." + lang + "/okapi";
 		this.accessToken = accessToken;
 	}
 	

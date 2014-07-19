@@ -41,7 +41,6 @@ public class Request {
 		String line;
 		while((line = reader.readLine()) != null)
 			sb.append(line);
-
 		return sb.toString();
 	}	
 	
