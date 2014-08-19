@@ -2,9 +2,6 @@ package pl.grushenko.okapi;
 
 import java.util.Date;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 import pl.grushenko.okapi.cache.Geocache;
 import pl.grushenko.okapi.cache.Log.LogType;
 import pl.grushenko.okapi.cache.User;
@@ -13,51 +10,83 @@ import pl.grushenko.okapi.net.URLParams;
 import pl.grushenko.okapi.oauth.OAuthToken;
 import pl.grushenko.okapi.util.ISO8601DateParser;
 
+import com.eclipsesource.json.JsonArray;
+import com.eclipsesource.json.JsonObject;
+
 public class OkApi {
-
-
-	private OAuthToken consumerToken;
-	private OAuthToken accessToken;
-	private String host;
 	
-
+	  private static OAuthToken consumerToken = null;
+	  private static OAuthToken accessToken = null;
+	  private static boolean isInitialized = false;
+	  private static String host = null;
+	  
 	
-	public OkApi(OAuthToken consumerToken, OAuthToken accessToken, String lang) {
-		this.consumerToken = consumerToken;
-		this.host = "http://opencaching." + lang + "/okapi";
-		this.accessToken = accessToken;
+	public static void init(OAuthToken consumer, OAuthToken access, String lang) {
+		consumerToken = consumer;
+		accessToken = access;
+		host = "http://opencaching." + lang + "/okapi";
+		isInitialized = true;
 	}
-	
-	
-	public User getUser(String username) throws Exception {
+	  
+	public static User getUser(String username) throws Exception {
+		
+		if(!isInitialized) throw new Exception("OkApi must be initialized first!");
+		
 		URLParams requestParams = new URLParams();
 		requestParams.appendParam("username", username);
 		requestParams.appendParam("fields", "uuid|profile_url|caches_found|caches_notfound|caches_hidden|rcmds_given");
 		
 		String res = Request.authorizedGetRequest(host + "/services/users/by_username", requestParams, consumerToken, accessToken);
-		JSONParser parser = new JSONParser();
-		JSONObject obj = (JSONObject)parser.parse(res);
+		
+		JsonObject obj = JsonObject.readFrom(res);
 		
 		return new User(obj);
 	}
 	
-	public Geocache getCache(String code) throws Exception {
+	public static Geocache getCache(String code, boolean minimal) throws Exception {
+		
+		if(!isInitialized) throw new Exception("OkApi must be initialized first!");
 		
 		URLParams requestParams = new URLParams();
 		requestParams.appendParam("cache_code", code);
 		//requestParams.appendParam("my_location", loc);
-		requestParams.appendParam("fields", "name|short_description|location|type|status|url|owner|is_found|is_not_found|is_watched|is_ignored|founds|notfounds|size2|difficulty|terrain|rating|description|hint2|recommendations|req_passwd|images|latest_logs|my_notes|trackables|alt_wpts|last_found|date_hidden");
-		
+		if(!minimal)
+			requestParams.appendParam("fields", "name|short_description|location|type|status|url|owner|is_found|is_not_found|is_watched|is_ignored|founds|notfounds|size2|difficulty|terrain|rating|description|hint2|recommendations|req_passwd|images|latest_logs|my_notes|trackables|alt_wpts|last_found|date_hidden");
+		else
+			requestParams.appendParam("fields", "name|short_description|description|type|status|is_watched|is_ignored|founds|notfounds|req_passwd");
+			
 		String res = Request.authorizedGetRequest(host + "/services/caches/geocache", requestParams, consumerToken, accessToken);
-		JSONParser parser = new JSONParser();
-		JSONObject obj = (JSONObject)parser.parse(res);
-		return new Geocache(code, obj);
+		JsonObject obj = JsonObject.readFrom(res);
+		return new Geocache(code, obj, minimal);
+	}
+	
+	public static Geocache getCache(String code) throws Exception {
+		return getCache(code, false);
+	}
+	
+	
+	public static String[] search(String querry) throws Exception {
 		
 		
+		URLParams params = new URLParams();
+		params.appendParam("name", querry);
+		String res = Request.authorizedGetRequest(host + "/services/caches/search/all", params, consumerToken, accessToken);
+		JsonObject obj = JsonObject.readFrom(res);
+		JsonArray result = obj.get("results").asArray();
+		
+		String[] codes = new String[result.size()];
+		
+		for(int i = 0; i < result.size(); i++)
+			codes[i] = result.get(i).asString();
+		
+		return codes;
 	}
 	
 
-	public void submitLog(String cacheCode, LogType type, String comment, Date date, int rating, boolean recomend, String password, boolean needsMaintenance) throws Exception {
+	public static void submitLog(String cacheCode, LogType type, String comment, Date date, int rating, boolean recomend, String password, boolean needsMaintenance) throws Exception {
+		
+		if(!isInitialized) throw new Exception("OkApi must be initialized first!");
+		
 		URLParams requestParams = new URLParams();
 		requestParams.appendParam("cache_code", cacheCode);
 		requestParams.appendParam("logtype", type.getData());
@@ -73,18 +102,18 @@ public class OkApi {
 		
 		
 		String res = Request.authorizedGetRequest(host + "/services/logs/submit", requestParams, consumerToken, accessToken);
-		JSONParser parser = new JSONParser();
-		JSONObject obj = (JSONObject)parser.parse(res);
-		if(!(Boolean)obj.get("success"))
-			throw new Exception((String)obj.get("message"));
+		
+		JsonObject obj = JsonObject.readFrom(res);
+		if(!obj.get("success").asBoolean())
+			throw new Exception(obj.get("message").asString());
 		
 	}
 	
-	public void submitLog(String cacheCode, LogType type, String comment, Date date, int rating) throws Exception {
+	public static void submitLog(String cacheCode, LogType type, String comment, Date date, int rating) throws Exception {
 		submitLog(cacheCode, type, comment, date, rating, false, null, false);
 	}
 	
-	public void submitLog(String cacheCode, LogType type, String comment, Date date) throws Exception {
+	public static void submitLog(String cacheCode, LogType type, String comment, Date date) throws Exception {
 		submitLog(cacheCode, type, comment, date, -1, false, null, false);
 	}	
 		

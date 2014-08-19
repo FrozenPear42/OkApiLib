@@ -9,12 +9,13 @@ import java.util.Iterator;
 
 import javax.imageio.ImageIO;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import pl.grushenko.okapi.util.CaptionedImage;
 import pl.grushenko.okapi.util.ISO8601DateParser;
 import pl.grushenko.okapi.util.Location;
+
+import com.eclipsesource.json.JsonArray;
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
 
 public class Geocache {
 	private String code;
@@ -44,56 +45,59 @@ public class Geocache {
 	private String myNotes;
 	private ArrayList<CaptionedImage> images;
 	
-	public Geocache(String code, JSONObject obj)
+	public Geocache(String code, JsonObject obj, boolean minimal)
 	{
 		this.code = code;
-		this.name = (String) obj.get("name");
-		this.type = (String) obj.get("type");
-		this.location = new Location((String) obj.get("location"));
-		this.status = (String) obj.get("status");
+		this.name =  obj.get("name").asString();
+		this.type =  obj.get("type").asString();
+		this.shortDescription =  obj.get("short_description").asString();
+		this.description =  obj.get("description").asString();
+	
+		if(minimal) return;
+		
+		
+		this.location = new Location( obj.get("location").asString());
+		this.status =  obj.get("status").asString();
 		try {
-			this.url = new URL((String) obj.get("url"));
+			this.url = new URL( obj.get("url").asString() );
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
-		this.founds = (Long) obj.get("founds");
-		this.notfounds = (Long) obj.get("notfounds");
-		this.size = (String) obj.get("size2");
+		this.founds = (Long) obj.get("founds").asLong();
+		this.notfounds = (Long) obj.get("notfounds").asLong();
+		this.size =  obj.get("size2").asString();
 
-		this.difficulty = ((Number) obj.get("difficulty")).floatValue();
-		this.terrain = ((Number) obj.get("terrain")).floatValue();
+		this.difficulty = obj.get("difficulty").asFloat();
+		this.terrain = obj.get("terrain").asFloat();
 		
-		this.rating = (Long) obj.get("rating");
-		this.recommendations = (Long) obj.get("recommendations");
-		this.reqPasswd = (Boolean) obj.get("req_passwd");
+		this.rating = obj.get("rating").asInt();
+		this.recommendations = obj.get("recommendations").asInt();
+		this.reqPasswd = (Boolean) obj.get("req_passwd").asBoolean();
 		try {
-			this.lastFound = ISO8601DateParser.parse((String) obj.get("last_found"));
-			this.date_hidden = ISO8601DateParser.parse((String) obj.get("date_hidden"));
+			this.lastFound = ISO8601DateParser.parse( obj.get("last_found").asString());
+			this.date_hidden = ISO8601DateParser.parse( obj.get("date_hidden").asString());
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		this.owner = new User((JSONObject) obj.get("owner"));
-		this.isFound = (Boolean) obj.get("is_found");
-		this.isNotFound = (Boolean) obj.get("is_not_found");
-		this.isWatched = (Boolean) obj.get("is_watched");
-		this.isIgnored = (Boolean) obj.get("is_ignored");
+		this.owner = new User((obj.get("owner").asObject()));
+		this.isFound = obj.get("is_found").asBoolean();
+		this.isNotFound = obj.get("is_not_found").asBoolean();
+		this.isWatched =  obj.get("is_watched").asBoolean();
+		this.isIgnored =  obj.get("is_ignored").asBoolean();
 		
-		this.shortDescription = (String) obj.get("short_description");
-		this.description = (String) obj.get("description");
 		
-		this.myNotes = (String) obj.get("my_notes");
+		this.myNotes =  obj.get("my_notes").asString();
 		
 		this.images = new ArrayList<CaptionedImage>();
 		
-		JSONArray imgs = (JSONArray) obj.get("images");
+		JsonArray imgs = obj.get("images").asArray();
 		
-		@SuppressWarnings("unchecked")
-		Iterator<JSONObject> it = imgs.iterator();
+		Iterator<JsonValue> it = imgs.iterator();
 		
 		while(it.hasNext()) {
-			JSONObject img = it.next();
+			JsonObject img = it.next().asObject();
 			try {
-				this.images.add(new CaptionedImage(ImageIO.read(new URL((String)img.get("url"))), (String) img.get("caption"), (Boolean) img.get("is_spoiler")));
+				this.images.add(new CaptionedImage(ImageIO.read(new URL(img.get("url").asString())),  img.get("caption").asString(), img.get("is_spoiler").asBoolean()));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

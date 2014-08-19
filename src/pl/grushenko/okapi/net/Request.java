@@ -21,7 +21,8 @@ public class Request {
 		HttpURLConnection connection = (HttpURLConnection) obj.openConnection();           
 		connection.setRequestMethod("GET"); 
 		connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded"); 
-		
+		connection.setConnectTimeout(5 * 1000);
+		connection.setReadTimeout(10*1000);
 		
 		//Error buffer
 		if(connection.getResponseCode() != 200) {

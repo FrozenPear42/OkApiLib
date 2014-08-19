@@ -3,9 +3,9 @@ package pl.grushenko.okapi.cache;
 import java.text.ParseException;
 import java.util.Date;
 
-import org.json.simple.JSONObject;
-
 import pl.grushenko.okapi.util.ISO8601DateParser;
+
+import com.eclipsesource.json.JsonObject;
 
 public class Log {
 	
@@ -38,18 +38,18 @@ public class Log {
 	private Boolean isRecommended;
 	private String comment;
 
-	public Log(JSONObject obj) {
-		this.uuid = (String) obj.get("uuid");
+	public Log(JsonObject obj) {
+		this.uuid = obj.get("uuid").asString();
 		
 		try {
-			this.date = ISO8601DateParser.parse((String) obj.get("date"));
+			this.date = ISO8601DateParser.parse(obj.get("date").asString());
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		this.user = new User((JSONObject)obj.get("user"));
-		this.type = LogType.valueOf((String) obj.get("type"));
-		this.isRecommended = (Boolean) obj.get("was_recommended");
-		this.comment = (String) obj.get("comment");
+		this.user = new User((obj.get("user").asObject()));
+		this.type = LogType.valueOf(obj.get("type").asString());
+		this.isRecommended = obj.get("was_recommended").asBoolean();
+		this.comment = obj.get("comment").asString();
 		//images
 	}
 	

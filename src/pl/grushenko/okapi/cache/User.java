@@ -3,7 +3,7 @@ package pl.grushenko.okapi.cache;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.json.simple.JSONObject;
+import com.eclipsesource.json.JsonObject;
 
 public class User {
 	private String uuid;
@@ -14,22 +14,22 @@ public class User {
 	private long cachesHidden;
 	private long recomendationsGiven;
 	
-	public User(JSONObject obj){
-		uuid = (String) obj.get("uuid");
-		username = (String) obj.get("username");
+	public User(JsonObject obj){
+		uuid = obj.get("uuid").asString();
+		username = obj.get("username").asString();
 		try {
-			profileURL = new URL((String) obj.get("profile_url"));
+			profileURL = new URL(obj.get("profile_url").asString());
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
-		if(obj.containsKey("caches_found"))
-			cachesFound = (Long) obj.get("caches_found");
-		if(obj.containsKey("caches_notfound"))
-			cachesNotFound = (Long) obj.get("caches_notfound");
-		if(obj.containsKey("caches_hidden"))
-			cachesHidden = (Long) obj.get("caches_hidden");
-		if(obj.containsKey("rcmds_given"))
-			recomendationsGiven = (Long) obj.get("rcmds_given");
+		if(obj.get("caches_found").isNull())
+			cachesFound = obj.get("caches_found").asLong();
+		if(obj.get("caches_notfound").isNull())
+			cachesNotFound = obj.get("caches_notfound").asLong();
+		if(obj.get("caches_hidden").isNull())
+			cachesHidden =  obj.get("caches_hidden").asLong();
+		if(obj.get("rcmds_given").isNull())
+			recomendationsGiven = obj.get("rcmds_given").asLong();
 		
 	}
 
