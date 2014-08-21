@@ -21,8 +21,8 @@ public class Geocache {
 	private String code;
 	private String name;
 	private Location location;
-	private String type;
-	private String status;
+	private GeocacheType type;
+	private GeocacheStatus status;
 	private URL url;
 	private User owner;
 	private float distance;
@@ -49,15 +49,14 @@ public class Geocache {
 	{
 		this.code = code;
 		this.name =  obj.get("name").asString();
-		this.type =  obj.get("type").asString();
+		this.type =  GeocacheType.fromString(obj.get("type").asString());
 		this.shortDescription =  obj.get("short_description").asString();
-		this.description =  obj.get("description").asString();
-	
+		this.status =  GeocacheStatus.fromString(obj.get("status").asString());
+		
 		if(minimal) return;
 		
-		
+		this.description =  obj.get("description").asString();
 		this.location = new Location( obj.get("location").asString());
-		this.status =  obj.get("status").asString();
 		try {
 			this.url = new URL( obj.get("url").asString() );
 		} catch (MalformedURLException e) {
@@ -123,11 +122,11 @@ public class Geocache {
 		return location;
 	}
 
-	public String getType() {
+	public GeocacheType getType() {
 		return type;
 	}
 
-	public String getStatus() {
+	public GeocacheStatus getStatus() {
 		return status;
 	}
 
@@ -214,4 +213,57 @@ public class Geocache {
 	public ArrayList<CaptionedImage> getImages() {
 		return images;
 	}
+
+	public enum GeocacheType {
+		TRADITIONAL("Traditional"),
+		MULTI("Multi"),
+		QUIZ("Quiz"),
+		VIRTUAL("Virtual"),
+		EVENT("Event"),
+		OTHER("Other"),
+		OWN("Own"),
+		WEBCAM("Webcam"),
+		MOVING("Moving");
+		
+		private final String data;
+		private GeocacheType(String data) {
+			this.data = data;
+		}
+		public String getData(){
+			return data;
+		}
+		public static GeocacheType fromString(String s) {
+			try {
+				return valueOf(s.toUpperCase());
+			} catch (Exception e) {
+				return OTHER;
+			}
+		}
+		
+	}
+	
+	public enum GeocacheStatus {
+		AVAILABLE("Available"),
+		TEMPORARILY_UNAVAILABLE("Temporarily unavailable"),
+		ARCHIVED("Archived"),
+		UNKNOWN("Unknown");
+		
+		private final String data;
+		
+		private GeocacheStatus(String data) {
+			this.data = data;
+		}
+		
+		public String getData() {
+			return data;
+		}
+		
+		public static GeocacheStatus fromString(String s) {
+			for(GeocacheStatus v : values())
+				if(v.data.equals(s))
+					return v;
+			return UNKNOWN;
+		}
+	}
 }
+

@@ -1,8 +1,5 @@
 package pl.grushenko.okapi.oauth;
 
-import java.net.URL;
-import java.util.Date;
-
 import pl.grushenko.okapi.net.Request;
 import pl.grushenko.okapi.net.URLParams;
 
@@ -13,20 +10,12 @@ public class OAuth {
 		String func = "http://opencaching." + lang + "/okapi/services/oauth/request_token";
 		
 		URLParams requestParams = new URLParams();
-		requestParams.appendParam("oauth_consumer_key", consumerToken.getKey());
-		requestParams.appendParam("oauth_signature_method", "HMAC-SHA1");
-		requestParams.appendParam("oauth_timestamp", String.valueOf((new Date().getTime()/1000)));
-		requestParams.appendParam("oauth_nonce", Integer.toHexString((int) new Date().getTime()));
-		requestParams.appendParam("oauth_version", "1.0");
 		if(callback != null)
 			requestParams.appendParam("oauth_callback", callback);
 		else
 			requestParams.appendParam("oauth_callback", "oob");
 		
-		
-		requestParams = OAuthUtils.signRequest(func, requestParams, consumerToken);
-		
-		URLParams res = URLParams.parseParamsString(Request.getRequest(func, requestParams));
+		URLParams res = URLParams.parseParamsString(Request.L2AuthGetRequest(func, requestParams, consumerToken));
 		return new OAuthToken(res.getParam("oauth_token"), res.getParam("oauth_token_secret"));
 	}
 
@@ -47,7 +36,7 @@ public class OAuth {
 		URLParams requestParams = new URLParams();
 		requestParams.appendParam("oauth_verifier", PIN);
 		
-		URLParams res = URLParams.parseParamsString(Request.authorizedGetRequest(func, requestParams, consumerToken, authorizedToken));
+		URLParams res = URLParams.parseParamsString(Request.L3AuthGetRequest(func, requestParams, consumerToken, authorizedToken));
 		
 		return new OAuthToken(res.getParam("oauth_token"), res.getParam("oauth_token_secret"));
 	}
