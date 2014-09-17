@@ -1,9 +1,8 @@
 package pl.grushenko.okapi.cache;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import pl.grushenko.okapi.util.ISO8601DateParser;
 
 import com.eclipsesource.json.JsonObject;
 
@@ -13,12 +12,12 @@ public class Log {
 		FOUND_IT("Found it"),
 		DIDNT_FOUND_IT("Didn't find it"),
 		COMMENT("Comment"),
+		NEEDS_MAINTENANCE("Needs maintenance"),
+		MAINTENANCE_PERFORMED("Maintenance performed"),
 		TEMPORARILY_UNAVAILABLE("Temporarily unavailable"),
 		READY_TO_SEARCH("Ready to search"),
 		ARCHIVED("Archived"),
 		LOCKED("Locked"),
-		NEEDS_MAINTENANCE("Needs maintenance"),
-		MAINTENANCE_PERFORMED("Maintenance performed"),
 		MOVED("Moved");
 		
 		private final String data;
@@ -42,7 +41,7 @@ public class Log {
 		this.uuid = obj.get("uuid").asString();
 		
 		try {
-			this.date = ISO8601DateParser.parse(obj.get("date").asString());
+			this.date = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:sszzzzz").parse(obj.get("date").asString());
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}

@@ -22,13 +22,13 @@ public class User {
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
-		if(obj.get("caches_found").isNull())
+		if(obj.get("caches_found") != null)
 			cachesFound = obj.get("caches_found").asLong();
-		if(obj.get("caches_notfound").isNull())
+		if(obj.get("caches_notfound") != null)
 			cachesNotFound = obj.get("caches_notfound").asLong();
-		if(obj.get("caches_hidden").isNull())
+		if(obj.get("caches_hidden") != null)
 			cachesHidden =  obj.get("caches_hidden").asLong();
-		if(obj.get("rcmds_given").isNull())
+		if(obj.get("rcmds_given") != null)
 			recomendationsGiven = obj.get("rcmds_given").asLong();
 		
 	}

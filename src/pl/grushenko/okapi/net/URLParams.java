@@ -15,13 +15,13 @@ public class URLParams {
 		this.params = new TreeMap<String, String>();
 	}
 	
-	public void appendParam(String key, String value) {
+	public URLParams appendParam(String key, String value) {
 		try {
 			this.params.put(URLEncoder.encode(key, "utf-8"), URLEncoder.encode(value, "utf-8").replace("+", "%20"));
 		} catch (UnsupportedEncodingException e) {
-			//SHOULD NEVER HAPPEN
 			e.printStackTrace();
 		}
+		return this;
 	}
 	
 	

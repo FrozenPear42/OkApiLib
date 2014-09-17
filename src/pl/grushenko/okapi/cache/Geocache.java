@@ -1,108 +1,30 @@
 package pl.grushenko.okapi.cache;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.io.Serializable;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 
-import javax.imageio.ImageIO;
-
-import pl.grushenko.okapi.util.CaptionedImage;
-import pl.grushenko.okapi.util.ISO8601DateParser;
-import pl.grushenko.okapi.util.Location;
-
-import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 
-public class Geocache {
-	private String code;
-	private String name;
-	private Location location;
-	private GeocacheType type;
-	private GeocacheStatus status;
-	private URL url;
-	private User owner;
-	private float distance;
-	private long founds;
-	private long notfounds;
-	private String size;
-	private float difficulty;
-	private float terrain;
-	private long rating;
-	private long recommendations;
-	private boolean reqPasswd;
-	private Date lastFound;
-	private Date date_hidden;
-	private boolean isFound;
-	private boolean isNotFound;
-	private boolean isWatched;
-	private boolean isIgnored;
-	private String shortDescription;
-	private String description;
-	private String myNotes;
-	private ArrayList<CaptionedImage> images;
+public class Geocache implements Serializable {
 	
-	public Geocache(String code, JsonObject obj, boolean minimal)
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8469063162031684283L;
+	private String code;
+	private JsonObject data;
+	
+	public Geocache(String code, JsonObject obj)
 	{
 		this.code = code;
-		this.name =  obj.get("name").asString();
-		this.type =  GeocacheType.fromString(obj.get("type").asString());
-		this.shortDescription =  obj.get("short_description").asString();
-		this.status =  GeocacheStatus.fromString(obj.get("status").asString());
+		this.data = obj;
 		
-		if(minimal) return;
-		
-		this.description =  obj.get("description").asString();
-		this.location = new Location( obj.get("location").asString());
-		try {
-			this.url = new URL( obj.get("url").asString() );
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
-		this.founds = (Long) obj.get("founds").asLong();
-		this.notfounds = (Long) obj.get("notfounds").asLong();
-		this.size =  obj.get("size2").asString();
-
-		this.difficulty = obj.get("difficulty").asFloat();
-		this.terrain = obj.get("terrain").asFloat();
-		
-		this.rating = obj.get("rating").asInt();
-		this.recommendations = obj.get("recommendations").asInt();
-		this.reqPasswd = (Boolean) obj.get("req_passwd").asBoolean();
-		try {
-			this.lastFound = ISO8601DateParser.parse( obj.get("last_found").asString());
-			this.date_hidden = ISO8601DateParser.parse( obj.get("date_hidden").asString());
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-		this.owner = new User((obj.get("owner").asObject()));
-		this.isFound = obj.get("is_found").asBoolean();
-		this.isNotFound = obj.get("is_not_found").asBoolean();
-		this.isWatched =  obj.get("is_watched").asBoolean();
-		this.isIgnored =  obj.get("is_ignored").asBoolean();
-		
-		
-		this.myNotes =  obj.get("my_notes").asString();
-		
-		this.images = new ArrayList<CaptionedImage>();
-		
-		JsonArray imgs = obj.get("images").asArray();
-		
-		Iterator<JsonValue> it = imgs.iterator();
-		
-		while(it.hasNext()) {
-			JsonObject img = it.next().asObject();
-			try {
-				this.images.add(new CaptionedImage(ImageIO.read(new URL(img.get("url").asString())),  img.get("caption").asString(), img.get("is_spoiler").asBoolean()));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-	
-		
+		//imgs
 		//logs
 		//alt_wpts
 		//trackables
@@ -115,102 +37,125 @@ public class Geocache {
 	}
 
 	public String getName() {
-		return name;
+		return data.get("name").asString();
 	}
+	
+	public String getHint() {
+		return data.get("hint2").asString();
+	}
+	
 
-	public Location getLocation() {
-		return location;
+	public String getLocation() {
+		return data.get("location").asString().replace('|', ' ');
 	}
 
 	public GeocacheType getType() {
-		return type;
+		return GeocacheType.fromString(data.get("type").asString());
 	}
 
 	public GeocacheStatus getStatus() {
-		return status;
+		return GeocacheStatus.fromString(data.get("status").asString());
 	}
 
-	public URL getUrl() {
-		return url;
+	public String getUrl() {
+			return data.get("url").asString();
 	}
 
 	public User getOwner() {
-		return owner;
+		return new User((data.get("owner").asObject()));
 	}
 
 	public float getDistance() {
-		return distance;
+		return data.get("distance").asFloat();
 	}
 
 	public long getFounds() {
-		return founds;
+		return data.get("founds").asInt();
 	}
 
 	public long getNotfounds() {
-		return notfounds;
+		return data.get("notfounds").asInt();
 	}
 
 	public String getSize() {
-		return size;
+		return data.get("size2").asString();
 	}
 
 	public float getDifficulty() {
-		return difficulty;
+		return data.get("difficulty").asFloat();
 	}
 
 	public float getTerrain() {
-		return terrain;
+		return data.get("terrain").asFloat();
 	}
 
-	public long getRating() {
-		return rating;
+	public int getRating() {
+		return data.get("rating").asInt();
+	}
+	
+	public int getRated() {
+		return data.get("rating_votes").asInt();
 	}
 
 	public long getRecommendations() {
-		return recommendations;
+		return data.get("recommendations").asInt();
 	}
 
 	public boolean isReqPasswd() {
-		return reqPasswd;
+		return data.get("req_passwd").asBoolean();
 	}
 
 	public Date getLastFound() {
-		return lastFound;
+		 SimpleDateFormat df = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:sszzzzz");
+		try {
+			return df.parse(data.get("last_found").asString());
+		} catch (ParseException e) {
+			return null;
+		}
 	}
 
 	public Date getDate_hidden() {
-		return date_hidden;
+		 SimpleDateFormat df = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:sszzzzz");
+		try {
+			return df.parse(data.get("date_hidden").asString());
+		} catch (ParseException e) {
+			return null;
+		}
 	}
 
 	public boolean isFound() {
-		return isFound;
+		return data.get("is_found").asBoolean();
 	}
 
 	public boolean isNotFound() {
-		return isNotFound;
+		return data.get("is_not_found").asBoolean();
 	}
 
 	public boolean isWatched() {
-		return isWatched;
+		return data.get("is_watched").asBoolean();
 	}
 
 	public boolean isIgnored() {
-		return isIgnored;
+		return data.get("is_ignored").asBoolean();
 	}
 
 	public String getShortDescription() {
-		return shortDescription;
+		return data.get("short_description").asString();
 	}
 
 	public String getDescription() {
-		return description;
+		return data.get("description").asString();
 	}
 
 	public String getMyNotes() {
-		return myNotes;
+		return data.get("my_notes").asString();
 	}
 
-	public ArrayList<CaptionedImage> getImages() {
+	public ArrayList<Image> getImages() {
+		ArrayList<Image> images = new ArrayList<Image>();
+		Iterator<JsonValue> it = data.get("images").asArray().iterator();
+		while(it.hasNext())
+			images.add(new Image(it.next().asObject()));
 		return images;
 	}
 

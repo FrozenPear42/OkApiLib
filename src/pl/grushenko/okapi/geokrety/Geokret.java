@@ -5,8 +5,6 @@ import java.net.URL;
 
 import javax.imageio.ImageIO;
 
-import pl.grushenko.okapi.util.Location;
-
 public class Geokret {
 
 	public enum GeokretState {
@@ -50,7 +48,7 @@ public class Geokret {
 	private int id;
 	private String name;
 	private int distance;
-	private Location location;
+	private String location;
 	private String waypoint;
 	private int ownerId;
 	private GeokretState state;
@@ -58,7 +56,7 @@ public class Geokret {
 	private BufferedImage image;
 
 
-	public Geokret(int id, String name, int distance, Location location, String waypoint, int ownerId, GeokretState state, GeokretType type, String image) {
+	public Geokret(int id, String name, int distance, String location, String waypoint, int ownerId, GeokretState state, GeokretType type, String image) {
 		this.id = id;
 		this.name = name;
 		this.distance = distance;
@@ -89,7 +87,7 @@ public class Geokret {
 		return distance;
 	}
 
-	public Location getLocation() {
+	public String getLocation() {
 		return location;
 	}
 
