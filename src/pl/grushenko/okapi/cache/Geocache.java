@@ -49,6 +49,17 @@ public class Geocache implements Serializable {
 		return data.get("location").asString().replace('|', ' ');
 	}
 
+	public double getLat() {
+		String string = data.get("location").asString().split("\\|")[0];
+		
+		return Double.parseDouble(string);
+	}
+	
+	public double getLon() {
+		String string = data.get("location").asString().split("\\|")[1];
+		return Double.parseDouble(string);
+	}
+	
 	public GeocacheType getType() {
 		return GeocacheType.fromString(data.get("type").asString());
 	}

@@ -88,6 +88,8 @@ public static User getActiveUser() throws Exception {
 		return new Geocache(code, obj);
 	}
 	
+	
+	
 	public static Geocache getCacheImages(String code) throws Exception {
 		if(!isInitialized) throw new Exception("OkApi must be initialized first!");
 		
@@ -117,6 +119,27 @@ public static User getActiveUser() throws Exception {
 		
 		return codes;
 	}
+	
+	public static String[] searchBox(String box) throws Exception {
+		
+		if(!isInitialized) throw new Exception("OkApi must be initialized first!");
+		
+		URLParams params = new URLParams();
+		params.appendParam("bbox", box);
+		params.appendParam("limit", "500");
+		String res = Request.L1AuthGetRequest(host + "/services/caches/search/bbox", params, consumerToken);
+		JsonObject obj = JsonObject.readFrom(res);
+		JsonArray result = obj.get("results").asArray();
+		
+		String[] codes = new String[result.size()];
+		
+		for(int i = 0; i < result.size(); i++)
+			codes[i] = result.get(i).asString();
+		
+		return codes;
+	}
+	
+	
 	
 
 	public static boolean submitLog(String cacheCode, LogType type, String comment, Date date, int rating, boolean recomend, String password, boolean needsMaintenance) throws Exception {
