@@ -6,27 +6,33 @@ import java.util.Date;
 
 import com.eclipsesource.json.JsonObject;
 
-public class Log {
+public class GeocacheLog {
 	
 	public enum LogType {
-		FOUND_IT("Found it"),
-		DIDNT_FOUND_IT("Didn't find it"),
-		COMMENT("Comment"),
-		NEEDS_MAINTENANCE("Needs maintenance"),
-		MAINTENANCE_PERFORMED("Maintenance performed"),
-		TEMPORARILY_UNAVAILABLE("Temporarily unavailable"),
-		READY_TO_SEARCH("Ready to search"),
-		ARCHIVED("Archived"),
-		LOCKED("Locked"),
-		MOVED("Moved");
+		FOUND_IT("Found it", 0),
+		DIDNT_FOUND_IT("Didn't find it", 1),
+		COMMENT("Comment", 2),
+		NEEDS_MAINTENANCE("Needs maintenance", 3),
+		MAINTENANCE_PERFORMED("Maintenance performed", 4),
+		TEMPORARILY_UNAVAILABLE("Temporarily unavailable", 5),
+		READY_TO_SEARCH("Ready to search", 6),
+		ARCHIVED("Archived", 7),
+		LOCKED("Locked", 8),
+		MOVED("Moved", 9);
 		
 		private final String data;
-		LogType(String s) {
+		private final int id;
+		LogType(String s, int id) {
 			this.data = s;
+			this.id = id;
 		}
 		
 		public String getData(){
 			return this.data;
+		}
+		
+		public int getId() {
+			return this.id;
 		}
 	}
 
@@ -37,7 +43,7 @@ public class Log {
 	private Boolean isRecommended;
 	private String comment;
 
-	public Log(JsonObject obj) {
+	public GeocacheLog(JsonObject obj) {
 		this.uuid = obj.get("uuid").asString();
 		
 		try {

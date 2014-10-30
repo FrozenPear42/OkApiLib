@@ -5,7 +5,7 @@ import java.util.Date;
 
 import pl.grushenko.okapi.cache.Geocache;
 import pl.grushenko.okapi.cache.Geocache.GeocacheStatus;
-import pl.grushenko.okapi.cache.Log.LogType;
+import pl.grushenko.okapi.cache.GeocacheLog.LogType;
 import pl.grushenko.okapi.cache.User;
 import pl.grushenko.okapi.net.Request;
 import pl.grushenko.okapi.net.URLParams;
