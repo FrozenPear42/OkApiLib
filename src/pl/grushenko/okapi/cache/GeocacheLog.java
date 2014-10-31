@@ -1,10 +1,6 @@
 package pl.grushenko.okapi.cache;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import com.eclipsesource.json.JsonObject;
 
 public class GeocacheLog {
 	
@@ -34,6 +30,13 @@ public class GeocacheLog {
 		public int getId() {
 			return this.id;
 		}
+		
+		public static LogType fromString(String s) {
+			for(LogType v : values())
+				if(v.data.equals(s))
+					return v;
+			return COMMENT;
+		}
 	}
 
 	private String uuid;
@@ -43,19 +46,13 @@ public class GeocacheLog {
 	private Boolean isRecommended;
 	private String comment;
 
-	public GeocacheLog(JsonObject obj) {
-		this.uuid = obj.get("uuid").asString();
-		
-		try {
-			this.date = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:sszzzzz").parse(obj.get("date").asString());
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-		this.user = new User((obj.get("user").asObject()));
-		this.type = LogType.valueOf(obj.get("type").asString());
-		this.isRecommended = obj.get("was_recommended").asBoolean();
-		this.comment = obj.get("comment").asString();
-		//images
+	public GeocacheLog(String uuid, Date date, User user, LogType type, String comment, boolean isRecommended) {
+		this.uuid = uuid;
+		this.date = date;
+		this.user = user;
+		this.type = type;
+		this.isRecommended = isRecommended;
+		this.comment = comment;
 	}
 	
 	public String getUuid() {

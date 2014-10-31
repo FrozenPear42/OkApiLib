@@ -1,18 +1,23 @@
 package pl.grushenko.okapi;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 
 import pl.grushenko.okapi.cache.Geocache;
 import pl.grushenko.okapi.cache.Geocache.GeocacheStatus;
+import pl.grushenko.okapi.cache.GeocacheLog;
 import pl.grushenko.okapi.cache.GeocacheLog.LogType;
 import pl.grushenko.okapi.cache.User;
 import pl.grushenko.okapi.net.Request;
 import pl.grushenko.okapi.net.URLParams;
 import pl.grushenko.okapi.oauth.OAuthToken;
+import pl.grushenko.okapi.util.GeocacheParser;
 
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
 
 public class OkApi {
 	
@@ -70,13 +75,18 @@ public static User getActiveUser() throws Exception {
 		return new Geocache(code, obj);
 	
 	}
-	public static Geocache getCacheLogs(String code) throws Exception {
+	public static ArrayList<GeocacheLog> getCacheLogs(String code) throws Exception {
 		if(!isInitialized) throw new Exception("OkApi must be initialized first!");
 		
 		String flags =  "latest_logs";
 		String res = Request.L1AuthGetRequest(host + "/services/caches/geocache", new URLParams().appendParam("cache_code", code).appendParam("fields", flags), consumerToken);
 		JsonObject obj = JsonObject.readFrom(res);
-		return new Geocache(code, obj);
+		Iterator<JsonValue> it = obj.get("latest_logs").asArray().iterator();
+		ArrayList<GeocacheLog> logs = new ArrayList<GeocacheLog>();
+		while(it.hasNext()) {
+			logs.add(GeocacheParser.parseLog(it.next().asObject()));
+		}
+		return logs;
 	}
 
 	public static Geocache getCacheBaseData(String code) throws Exception {

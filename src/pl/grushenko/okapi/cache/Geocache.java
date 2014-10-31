@@ -171,23 +171,30 @@ public class Geocache implements Serializable {
 	}
 
 	public enum GeocacheType {
-		TRADITIONAL("Traditional"),
-		MULTI("Multi"),
-		QUIZ("Quiz"),
-		VIRTUAL("Virtual"),
-		EVENT("Event"),
-		OTHER("Other"),
-		OWN("Own"),
-		WEBCAM("Webcam"),
-		MOVING("Moving");
+		TRADITIONAL("Traditional", 0),
+		MULTI("Multi", 1),
+		QUIZ("Quiz", 2),
+		VIRTUAL("Virtual", 3),
+		EVENT("Event", 4),
+		OTHER("Other", 5),
+		OWN("Own", 6),
+		WEBCAM("Webcam", 7),
+		MOVING("Moving", 8);
 		
 		private final String data;
-		private GeocacheType(String data) {
+		private final int id;
+		private GeocacheType(String data, int id) {
 			this.data = data;
+			this.id = id;
 		}
 		public String getData(){
 			return data;
 		}
+		
+		public int getId(){
+			return this.id;
+		}
+		
 		public static GeocacheType fromString(String s) {
 			try {
 				return valueOf(s.toUpperCase());
@@ -199,19 +206,24 @@ public class Geocache implements Serializable {
 	}
 	
 	public enum GeocacheStatus {
-		AVAILABLE("Available"),
-		TEMPORARILY_UNAVAILABLE("Temporarily unavailable"),
-		ARCHIVED("Archived"),
-		UNKNOWN("Unknown");
+		AVAILABLE("Available", 0),
+		TEMPORARILY_UNAVAILABLE("Temporarily unavailable", 1),
+		ARCHIVED("Archived", 2),
+		UNKNOWN("Unknown", 3);
 		
 		private final String data;
-		
-		private GeocacheStatus(String data) {
+		private final int id;
+		private GeocacheStatus(String data, int id) {
 			this.data = data;
+			this.id = id;
 		}
 		
 		public String getData() {
 			return data;
+		}
+		
+		public int getId() {
+			return id;
 		}
 		
 		public static GeocacheStatus fromString(String s) {
